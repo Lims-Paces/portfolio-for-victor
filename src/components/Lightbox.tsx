@@ -1,0 +1,168 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { categories, driveEmbedUrl, driveViewUrl, type Video } from "@/lib/data";
+
+export function Lightbox({
+  videos,
+  publicIds,
+  index,
+  onNavigate,
+  onClose,
+}: {
+  videos: Video[];
+  publicIds: string[];
+  index: number;
+  onNavigate: (index: number) => void;
+  onClose: () => void;
+}) {
+  const video = videos[index];
+  const category = categories.find((c) => c.id === video.category)!;
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const many = videos.length > 1;
+
+  const step = (by: number) => onNavigate((index + by + videos.length) % videos.length);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") onNavigate((index + 1) % videos.length);
+      if (e.key === "ArrowLeft") onNavigate((index - 1 + videos.length) % videos.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [index, videos.length, onClose, onNavigate]);
+
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      previous?.focus();
+    };
+  }, []);
+
+  const portrait = video.orientation === "portrait";
+  const width = portrait
+    ? "min(92vw, calc(72dvh * 9 / 16))"
+    : "min(92vw, 1120px, calc(72dvh * 16 / 9))";
+
+  return (
+    <motion.div
+      role="dialog"
+      aria-modal="true"
+      aria-label={video.title}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-ink/92 p-4 backdrop-blur-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="flex max-w-full flex-col gap-4"
+        style={{ width }}
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-flare">
+              {category.label}
+            </p>
+            <h3 className="mt-1 truncate font-display text-2xl uppercase leading-tight md:text-3xl">
+              {video.title}
+            </h3>
+          </div>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            aria-label="Close player"
+            className="grid size-10 shrink-0 place-items-center rounded-full border border-line text-bone transition hover:border-flare hover:text-flare"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        <div
+          className="relative w-full overflow-hidden rounded-md border border-line bg-black"
+          style={{ aspectRatio: portrait ? "9 / 16" : "16 / 9" }}
+        >
+          {publicIds.includes(video.driveId) ? (
+            <iframe
+              key={video.driveId}
+              src={driveEmbedUrl(video.driveId)}
+              title={video.title}
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              className="absolute inset-0 size-full"
+            />
+          ) : (
+            // Drive only embeds files shared as "Anyone with the link"; a private one
+            // would load as a blank frame, so say so and offer the direct link instead.
+            <div className="absolute inset-0 grid place-items-center bg-panel p-6 text-center">
+              <div>
+                <p className="font-display text-2xl uppercase md:text-3xl">Preview coming soon</p>
+                <p className="mx-auto mt-3 max-w-sm text-sm text-ash">
+                  This video can&rsquo;t be played here yet. You can try opening it in Google Drive.
+                </p>
+                <a
+                  href={driveViewUrl(video.driveId)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-flare px-5 py-3 text-sm font-semibold text-ink transition hover:bg-bone"
+                >
+                  Open in Drive <ArrowUpRight className="size-4" />
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ash">
+          {many ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => step(-1)}
+                aria-label="Previous video"
+                className="grid size-9 place-items-center rounded-full border border-line text-bone transition hover:border-flare hover:text-flare"
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => step(1)}
+                aria-label="Next video"
+                className="grid size-9 place-items-center rounded-full border border-line text-bone transition hover:border-flare hover:text-flare"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+              <span className="ml-2 tabular-nums">
+                {String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}
+              </span>
+            </div>
+          ) : (
+            <span />
+          )}
+          <a
+            href={driveViewUrl(video.driveId)}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-bone transition hover:text-flare"
+          >
+            Open in Drive <ArrowUpRight className="size-3.5" />
+          </a>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
