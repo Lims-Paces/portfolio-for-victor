@@ -25,15 +25,33 @@ export function Lightbox({
 
   const step = (by: number) => onNavigate((index + by + videos.length) % videos.length);
 
+  // Opening the player adds a history entry, so the browser or phone back button closes
+  // it (and stops the video) instead of leaving the page with it still playing.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+  useEffect(() => {
+    if (!window.history.state?.lightbox) {
+      window.history.pushState({ ...window.history.state, lightbox: true }, "");
+    }
+    const onPop = () => onCloseRef.current();
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // Every way of closing goes back through that history entry, so none is left behind.
+  const dismiss = () => window.history.back();
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") window.history.back();
       if (e.key === "ArrowRight") onNavigate((index + 1) % videos.length);
       if (e.key === "ArrowLeft") onNavigate((index - 1 + videos.length) % videos.length);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [index, videos.length, onClose, onNavigate]);
+  }, [index, videos.length, onNavigate]);
 
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -61,7 +79,7 @@ export function Lightbox({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      onClick={onClose}
+      onClick={dismiss}
     >
       <motion.div
         className="flex max-w-full flex-col gap-4"
@@ -84,7 +102,7 @@ export function Lightbox({
           <button
             ref={closeRef}
             type="button"
-            onClick={onClose}
+            onClick={dismiss}
             aria-label="Close player"
             className="grid size-10 shrink-0 place-items-center rounded-full border border-line text-bone transition hover:border-flare hover:text-flare"
           >

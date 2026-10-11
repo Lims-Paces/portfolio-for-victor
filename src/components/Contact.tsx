@@ -77,14 +77,9 @@ export function Contact({ index }: { index?: string }) {
 
         <footer className="flex flex-col gap-3 border-t border-line py-8 font-mono text-[11px] uppercase tracking-[0.2em] text-ash sm:flex-row sm:items-center sm:justify-between lg:border-t">
           <p>© {profile.name}</p>
-          <div className="flex gap-6">
-            <a href={profile.linktree} target="_blank" rel="noreferrer" className="transition hover:text-bone">
-              Linktree
-            </a>
-            <a href="#top" className="transition hover:text-bone">
-              Back to top ↑
-            </a>
-          </div>
+          <a href="#top" className="transition hover:text-bone">
+            Back to top ↑
+          </a>
         </footer>
       </div>
     </section>
