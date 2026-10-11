@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { profile } from "@/lib/data";
 
+// Absolute hashes so the links also work from a category page.
 const links = [
-  { href: "#series", label: "AI films" },
-  { href: "#work", label: "Work" },
-  { href: "#about", label: "About" },
+  { href: "/#work", label: "Work" },
+  { href: "/#about", label: "About" },
 ];
 
 export function Nav() {
@@ -29,21 +30,22 @@ export function Nav() {
         aria-label="Main"
         className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-6 px-5 md:px-10"
       >
-        <a href="#top" className="font-display text-xl uppercase tracking-wide">
+        <Link href="/" className="font-display text-xl uppercase tracking-wide">
           {profile.firstName}
           <span className="text-flare">.</span>
-        </a>
+        </Link>
 
         <ul className="hidden items-center gap-8 font-mono text-[11px] uppercase tracking-[0.2em] text-ash md:flex">
           {links.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="transition hover:text-bone">
+              <Link href={link.href} className="transition hover:text-bone">
                 {link.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
 
+        {/* Every page ends with the contact section, so this stays a same-page jump. */}
         <a
           href="#contact"
           className="rounded-full border border-line px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] transition hover:border-flare hover:bg-flare hover:text-ink"

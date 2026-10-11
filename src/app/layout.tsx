@@ -21,7 +21,13 @@ const anton = Anton({
 
 const title = `${profile.name} — ${profile.role}`;
 
+// Vercel sets this to the live domain; link-preview images need an absolute address.
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title,
   description: profile.bio,
   openGraph: {
@@ -47,6 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} ${anton.variable} antialiased`}
     >
       <body className="grain min-h-dvh overflow-x-clip">{children}</body>

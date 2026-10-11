@@ -45,117 +45,198 @@ export const tools = ["Premiere Pro", "After Effects", "DaVinci Resolve", "CapCu
 export const copy = {
   hero: {
     statement: "I edit videos and make films with AI.",
-    sub: "Health awareness videos, podcasts, product videos and event edits.",
+    sub: "Podcasts, movie recaps, kids' videos, motivational videos, health awareness campaigns, real estate and events.",
   },
-  spotlight: { label: "AI films", title: "AI Films", blurb: "Short scenes I made with AI tools." },
-  work: { label: "Work", title: "Work" },
+  work: { label: "Work", title: "Work", blurb: "Pick a category to see the videos." },
   about: {
     label: "About",
     title: "About",
     lead: "Hi, I'm Victor. I'm a video editor, and I also make short films with AI.",
     body: [
-      "A lot of my work so far has been health awareness videos. I've also edited podcasts, product videos and events.",
-      "If you have footage that needs editing, or an idea you want to see on screen, send me a message.",
+      "I edit for YouTube channels including Dr Paul's Health Tips, Kiddies Fun Club, The Rise of the Eternal Warriors and The Prime Motion Studios. I've also worked on health awareness campaigns, real estate and events.",
+      "If you have footage that needs editing, or an idea you want to see on screen, get in touch.",
     ],
   },
   contact: { line1: "Need a video?", line2: "Get in touch." },
 };
 
-export type CategoryId =
-  | "ai-series"
-  | "health"
-  | "ai-health"
-  | "podcast"
-  | "product"
-  | "events";
-
 export type Category = {
-  id: CategoryId;
+  /** Also the page address: /work/<slug>. */
+  slug: string;
   label: string;
-  /** Hue (0-360) used to tint the title card shown when a video has no thumbnail. */
+  /** Hue (0-360) used to tint cards that have no thumbnail. */
   hue: number;
 };
 
-export const categories: Category[] = [
-  { id: "ai-series", label: "AI Films", hue: 22 },
-  { id: "health", label: "Health Awareness", hue: 160 },
-  { id: "ai-health", label: "AI Health Awareness", hue: 195 },
-  { id: "podcast", label: "Podcast", hue: 275 },
-  { id: "product", label: "Product", hue: 45 },
-  { id: "events", label: "Events", hue: 340 },
-];
+// The order on the site comes from the videos list below, not from this list.
+const categoryList = [
+  { slug: "ai-films", label: "AI Films", hue: 22 },
+  { slug: "events", label: "Events", hue: 340 },
+  { slug: "health-awareness", label: "Health Awareness", hue: 160 },
+  { slug: "kids", label: "Kids", hue: 50 },
+  { slug: "motivation", label: "Motivation", hue: 5 },
+  { slug: "podcasts", label: "Podcasts", hue: 275 },
+  { slug: "real-estate", label: "Real Estate", hue: 95 },
+  { slug: "movie-recaps", label: "Movie Recaps", hue: 240 },
+] as const satisfies readonly Category[];
+
+export type CategorySlug = (typeof categoryList)[number]["slug"];
 
 export type Video = {
-  /** Google Drive file id. To add a video, paste the id from its share link. */
-  driveId: string;
+  /** Where the video is hosted, and its id there (from the share link). */
+  source: "youtube" | "tiktok" | "drive";
+  id: string;
+  /** TikTok only: the account that posted it, used to link to the original. */
+  handle?: string;
   title: string;
-  category: CategoryId;
+  category: CategorySlug;
+  /** The channel or client the video was edited for. */
+  client?: string;
   orientation: "portrait" | "landscape";
-  /** Optional local thumbnail in /public. Falls back to Drive, then a title card. */
+  /** Optional local thumbnail in /public. */
   poster?: string;
 };
 
+const yt = (id: string, title: string, category: CategorySlug, client: string): Video => ({
+  source: "youtube",
+  id,
+  title,
+  category,
+  client,
+  orientation: "landscape",
+});
+
+const drive = (
+  id: string,
+  title: string,
+  category: CategorySlug,
+  extra: Partial<Video> = {},
+): Video => ({ source: "drive", id, title, category, orientation: "landscape", ...extra });
+
+// TikTok thumbnails expire, so each one is saved in /public/thumbs and passed as the poster.
+const tt = (
+  id: string,
+  title: string,
+  category: CategorySlug,
+  poster: string,
+  orientation: Video["orientation"] = "portrait",
+): Video => ({
+  source: "tiktok",
+  id,
+  handle: "myhealthintegral",
+  title,
+  category,
+  client: MHI,
+  orientation,
+  poster: `/thumbs/${poster}.jpg`,
+});
+
+const MHI = "My Health Integral";
+const DR_PAUL = "Dr Paul's Health Tips";
+const KIDDIES = "Kiddies Fun Club";
+const WARRIORS = "The Rise of the Eternal Warriors";
+const PRIME_MOTION = "The Prime Motion Studios";
+
 export const videos: Video[] = [
-  // AI Movie Series
-  {
-    driveId: "1oX99hXs5pSwY7z_FZm_PS_o2atA8uwHx",
-    title: "Message",
-    category: "ai-series",
-    orientation: "portrait",
-    poster: "/thumbs/message.jpg",
-  },
-  {
-    driveId: "18HgOxynqbn4PaDh0snr1KnpWiaNzjiWD",
-    title: "Clean in Here",
-    category: "ai-series",
-    orientation: "portrait",
-    poster: "/thumbs/clean-in-here.jpg",
-  },
-  {
-    driveId: "1D4wf4-D3mB66hMSUaS-OD-FMVfdrrdjz",
-    title: "Tea Split",
-    category: "ai-series",
-    orientation: "portrait",
-    poster: "/thumbs/tea-split.jpg",
-  },
-  {
-    driveId: "1H4_-1VvOBhxIGHkD4fC2c2xiLmNTGiP3",
-    title: "Boardroom",
-    category: "ai-series",
-    orientation: "portrait",
-    poster: "/thumbs/boardroom.jpg",
-  },
+  // Real Estate
+  drive("1PXQ7JjGC3XNaopUVk_ZhF0w3ZMfQyeUT", "Dubai LD", "real-estate", { orientation: "portrait", poster: "/thumbs/dubai-ld.jpg" }),
+  drive("1FKXoHOyV0uzNtKx509oRbi8v1_ymBVpD", "Palm Residence", "real-estate", { orientation: "portrait", poster: "/thumbs/palm-residence.jpg" }),
 
   // Health Awareness
-  { driveId: "17JMBoM5hRIZ_f6IVkCsGziO6_JO_DTxA", title: "World Ovarian Cancer Day", category: "health", orientation: "landscape" },
-  { driveId: "1jx0b-2c9O8Dgy5hiyedBpEy7c6exjAp3", title: "Parkinson", category: "health", orientation: "landscape" },
-  { driveId: "1nWNvDQOPEQleza8lekRJ4DFksJLMzj3s", title: "World Immunization Day", category: "health", orientation: "landscape" },
-  { driveId: "1lz9xwW-0rE1su0YGilgEhXk8aa5Niv_B", title: "Malaria MHI", category: "health", orientation: "landscape" },
-  { driveId: "10elYUy8amGeW60T-p_MYs8e327tM90bJ", title: "World Health Day", category: "health", orientation: "landscape" },
-  { driveId: "1bM4e-sL_fF3gcgd3h6wfk9_lGPFO7PQd", title: "World Cancer Day 2026", category: "health", orientation: "landscape" },
-  { driveId: "14u9aXjaqC_BltdbZ6eWYdgsMe6Z82UoR", title: "Tuberculosis", category: "health", orientation: "landscape" },
-
-  // AI Health Awareness
-  { driveId: "144Ob2ocAoc6JL1OyFiIbzlbBzWnMYHW6", title: "World Diabetes Day 2025", category: "ai-health", orientation: "landscape" },
-  { driveId: "1k9c-mdYdbnGNFjHQ7osZtBGObxT6l-mw", title: "Choose Life, Not Smoke", category: "ai-health", orientation: "landscape" },
-  { driveId: "1oVRJQbMhz68VYLr51-2zDoH0gD2Rrf5c", title: "Join NHI", category: "ai-health", orientation: "landscape" },
-  { driveId: "19neDBO9WP4wn6CyFoFdtOh6wtlonUdzs", title: "Good Health, Good Christmas", category: "ai-health", orientation: "landscape" },
-  { driveId: "1Qqv8yZTZBjsne7fMNYbV3rELhquKtNXn", title: "Wellness Wednesday", category: "ai-health", orientation: "landscape" },
-
-  // Podcast
-  { driveId: "1F4ON22QGnDINctDCe3ps2zXIib-HNqfs", title: "Bill Podcast 2", category: "podcast", orientation: "landscape" },
-
-  // Product
-  { driveId: "11XFon-8tb9inEsKW3q_1FUe4YRi5Gz-p", title: "Tom Marsh", category: "product", orientation: "landscape" },
+  tt("7637532644720299271", "World Ovarian Cancer Day", "health-awareness", "world-ovarian-cancer-day"),
+  drive("1TZFFIx2ZUUckeleJAImfvTkZltKGQ7Fi", "Parkinson", "health-awareness", { client: MHI, orientation: "portrait", poster: "/thumbs/parkinson.jpg" }),
+  tt("7634652550020549895", "World Immunization Day", "health-awareness", "world-immunization-day"),
+  tt("7632681859368881416", "Malaria MHI", "health-awareness", "malaria-mhi"),
+  tt("7626090121485421842", "World Health Day", "health-awareness", "world-health-day"),
+  tt("7602917085009726738", "World Cancer Day 2026", "health-awareness", "world-cancer-day-2026"),
+  drive("14u9aXjaqC_BltdbZ6eWYdgsMe6Z82UoR", "Tuberculosis", "health-awareness"),
+  drive("144Ob2ocAoc6JL1OyFiIbzlbBzWnMYHW6", "World Diabetes Day 2025", "health-awareness"),
+  tt("7584006879131716871", "Choose Life, Not Smoke", "health-awareness", "choose-life-not-smoke", "landscape"),
+  tt("7592909175248768264", "Join MHI", "health-awareness", "join-mhi"),
+  tt("7588083659601677576", "Good Health, Good Christmas", "health-awareness", "good-health-good-christmas"),
 
   // Events
-  { driveId: "1k2RDcaeu-1PumkWA8kB0CJxD8HfnTbeg", title: "121 Selah Opening Dance", category: "events", orientation: "landscape" },
-  { driveId: "1lsqBHo-1E_rJPy_i6SNPWoN6g9lZYgjU", title: "Dubai LD", category: "events", orientation: "landscape" },
+  drive("1GMbdxK56ly0pjQ1Cs8Q88rOfjSdgx-xC", "121 Selah Opening Dance", "events", { orientation: "portrait", poster: "/thumbs/121-selah.jpg" }),
+
+  // AI Films
+  drive("1D4wf4-D3mB66hMSUaS-OD-FMVfdrrdjz", "Tea Split", "ai-films", { orientation: "portrait", poster: "/thumbs/tea-split.jpg" }),
+  drive("1oX99hXs5pSwY7z_FZm_PS_o2atA8uwHx", "Message", "ai-films", { orientation: "portrait", poster: "/thumbs/message.jpg" }),
+  drive("1Q3tvyTBvi9nHJJLdaAb6C2layIuWsx_3", "I Knew Your Father", "ai-films", { orientation: "portrait", poster: "/thumbs/i-knew-your-father.jpg" }),
+  drive("18HgOxynqbn4PaDh0snr1KnpWiaNzjiWD", "Clean in Here", "ai-films", { orientation: "portrait", poster: "/thumbs/clean-in-here.jpg" }),
+  drive("1HZeQvhV3YNouAebH--NmU7kG3jN51Uwq", "Clean Flashback", "ai-films", { orientation: "portrait", poster: "/thumbs/clean-flashback.jpg" }),
+  drive("1a7DFbRAHJ3YERrNZ8QDffJU7dtkbNQ3n", "Burial Flashback", "ai-films", { orientation: "portrait", poster: "/thumbs/burial-flashback.jpg" }),
+  drive("1H4_-1VvOBhxIGHkD4fC2c2xiLmNTGiP3", "Boardroom", "ai-films", { orientation: "portrait", poster: "/thumbs/boardroom.jpg" }),
+  drive("1YV5HS2a6yue5JssNZ2L9Ygm0sAWksVLW", "Arrest", "ai-films", { orientation: "portrait", poster: "/thumbs/arrest.jpg" }),
+
+  // Kids
+  yt("k_ceGTlAVz8", "Soccer Tournament Song & Play Pretend Animals", "kids", KIDDIES),
+  yt("ABpsnEEHeKg", "Hurry! The School Bus Is Here!", "kids", KIDDIES),
+  yt("K8zX97923Ks", "Can You Make All 12 Animal Sounds?", "kids", KIDDIES),
+  yt("ikHvp1CGvDo", "The Hare Laughed at the Tortoise", "kids", KIDDIES),
+
+  // Motivation
+  yt("KXmDn_SZ0Fo", "You're Boring", "motivation", WARRIORS),
+  yt("ppZsvcebNNY", "Don't Waste the Rest of This Year", "motivation", WARRIORS),
+  yt("RX6nPl-9muQ", "Watch This Before You Trust Anyone Again", "motivation", WARRIORS),
+  yt("JFDyvAfZvcQ", "The Greatest Regret", "motivation", WARRIORS),
+  yt("m7wRxdk04U4", "The Greatest Regret (2)", "motivation", WARRIORS),
+
+  // Podcasts
+  yt("IOz2C-Is35A", "Baby Movements", "podcasts", DR_PAUL),
+  yt("tXIawVubHRI", "Your Body Is Changing During Pregnancy", "podcasts", DR_PAUL),
+  yt("JlHSgRQ6ZfM", "Food During Pregnancy", "podcasts", DR_PAUL),
+  yt("4FhM0QYgjNU", "Pregnant With Twins?", "podcasts", DR_PAUL),
+  yt("7DmDhhClb-M", "Why Is Pregnancy Changing My Skin, Nose, Taste and Memory?", "podcasts", DR_PAUL),
+  drive("1F4ON22QGnDINctDCe3ps2zXIib-HNqfs", "Bill Podcast 2", "podcasts"),
+
+  // Movie Recaps
+  yt("VTTgwAO-p_E", "Blade II", "movie-recaps", PRIME_MOTION),
+  yt("e7l4bgJrMWY", "Fantastic Four", "movie-recaps", PRIME_MOTION),
+  yt("WJr4hqzRC7A", "The Transporter", "movie-recaps", PRIME_MOTION),
+  yt("D0eVYFB5Jds", "Van Helsing", "movie-recaps", PRIME_MOTION),
 ];
 
-export const spotlightCategory: CategoryId = "ai-series";
+/**
+ * Categories in the order their first video appears in the list above. To reorder the
+ * site, move a category's block of videos up or down; videos show in the order listed.
+ */
+export const categories: Category[] = [...categoryList].sort(
+  (a, b) =>
+    videos.findIndex((v) => v.category === a.slug) - videos.findIndex((v) => v.category === b.slug),
+);
 
-export const driveEmbedUrl = (id: string) => `https://drive.google.com/file/d/${id}/preview`;
-export const driveViewUrl = (id: string) => `https://drive.google.com/file/d/${id}/view`;
+export const videosIn = (slug: string) => videos.filter((v) => v.category === slug);
+
 export const driveThumbUrl = (id: string, width = 800) =>
   `https://drive.google.com/thumbnail?id=${id}&sz=w${width}`;
+
+const hosts = {
+  youtube: {
+    name: "YouTube",
+    embed: (v: Video) => `https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`,
+    watch: (v: Video) => `https://www.youtube.com/watch?v=${v.id}`,
+  },
+  tiktok: {
+    name: "TikTok",
+    embed: (v: Video) => `https://www.tiktok.com/player/v1/${v.id}?autoplay=1&rel=0`,
+    watch: (v: Video) => `https://www.tiktok.com/@${v.handle}/video/${v.id}`,
+  },
+  drive: {
+    name: "Google Drive",
+    embed: (v: Video) => `https://drive.google.com/file/d/${v.id}/preview`,
+    watch: (v: Video) => `https://drive.google.com/file/d/${v.id}/view`,
+  },
+};
+
+export const hostName = (v: Video) => hosts[v.source].name;
+export const embedUrl = (v: Video) => hosts[v.source].embed(v);
+export const watchUrl = (v: Video) => hosts[v.source].watch(v);
+
+/** A still for the video, or null when it has none yet (a Drive file that isn't shared). */
+export const thumbUrl = (v: Video, playable: boolean) =>
+  v.poster ??
+  (v.source === "youtube"
+    ? `https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`
+    : v.source === "drive" && playable
+      ? driveThumbUrl(v.id)
+      : null);

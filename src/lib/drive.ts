@@ -1,7 +1,7 @@
 import { cacheLife } from "next/cache";
 import { driveThumbUrl, videos } from "./data";
 
-async function hasPublicThumbnail(driveId: string) {
+async function isSharedPublicly(driveId: string) {
   try {
     const res = await fetch(driveThumbUrl(driveId, 64), {
       signal: AbortSignal.timeout(8000),
@@ -14,15 +14,19 @@ async function hasPublicThumbnail(driveId: string) {
 }
 
 /**
- * Ids of the Drive videos that are shared publicly. Re-checked hourly, so a video
- * picks up its thumbnail on its own once its sharing is set to "Anyone with the link".
+ * Ids of the videos that can be played in the page. YouTube and TikTok ones always can.
+ * A Drive video can once it is shared as "Anyone with the link": one with a saved poster
+ * was checked when it was added, and the rest are checked here every few minutes, so
+ * they start playing on their own after their sharing is fixed.
  */
-export async function getPublicDriveIds(): Promise<string[]> {
+export async function getPlayableIds(): Promise<string[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("minutes");
 
   const checks = await Promise.all(
-    videos.map(async (v) => ((await hasPublicThumbnail(v.driveId)) ? v.driveId : null)),
+    videos.map(async (v) =>
+      v.source !== "drive" || v.poster || (await isSharedPublicly(v.id)) ? v.id : null,
+    ),
   );
   return checks.filter((id): id is string => id !== null);
 }

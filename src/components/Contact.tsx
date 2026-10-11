@@ -3,7 +3,7 @@ import { copy, profile, socials } from "@/lib/data";
 import { SocialIcon } from "./icons";
 import { Reveal } from "./Reveal";
 
-export function Contact() {
+export function Contact({ index }: { index?: string }) {
   return (
     <section id="contact" className="relative overflow-hidden px-5 pt-24 md:px-10 md:pt-36">
       <div
@@ -14,7 +14,8 @@ export function Contact() {
       <div className="relative mx-auto max-w-[1500px]">
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-flare">
-            04 <span className="text-ash">/ Contact</span>
+            {index && <>{index} </>}
+            <span className="text-ash">{index && "/ "}Contact</span>
           </p>
           <h2 className="mt-5 font-display text-[clamp(3.25rem,13vw,12rem)] uppercase leading-[0.98]">
             {copy.contact.line1}

@@ -1,33 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { categories, driveThumbUrl, type Video } from "@/lib/data";
+import { categories, thumbUrl, type Video } from "@/lib/data";
 
 /**
- * A video's still. Uses the local poster, then the Drive thumbnail when the file is
- * public, and otherwise a typographic title card so private videos still look designed.
+ * A video's still, or a typographic title card when it has none yet, so videos that
+ * aren't shared publicly still look designed.
  */
-export function Thumb({ video, isPublic }: { video: Video; isPublic: boolean }) {
+export function Thumb({ video, playable }: { video: Video; playable: boolean }) {
   const [failed, setFailed] = useState(false);
-  const src = video.poster ?? (isPublic ? driveThumbUrl(video.driveId) : null);
+  const src = thumbUrl(video, playable);
 
   if (!src || failed) return <TitleCard video={video} />;
 
-  // Portrait frames match their footage, so the still can fill them. Landscape frames
-  // may hold footage of any shape, so the still is fitted over a blurred copy of itself.
-  if (video.orientation === "portrait") {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt=""
-        loading="lazy"
-        onError={() => setFailed(true)}
-        className="absolute inset-0 size-full object-cover"
-      />
-    );
-  }
-
+  // Stills come in many shapes (16:9, 9:16, 4:5...), so each is fitted whole over a
+  // blurred copy of itself rather than cropped to the frame.
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -51,7 +38,7 @@ export function Thumb({ video, isPublic }: { video: Video; isPublic: boolean }) 
 }
 
 function TitleCard({ video }: { video: Video }) {
-  const category = categories.find((c) => c.id === video.category)!;
+  const category = categories.find((c) => c.slug === video.category)!;
   return (
     <div
       className="@container absolute inset-0 flex items-end overflow-hidden"

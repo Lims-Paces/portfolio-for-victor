@@ -3,23 +3,23 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { categories, driveEmbedUrl, driveViewUrl, type Video } from "@/lib/data";
+import { categories, embedUrl, hostName, watchUrl, type Video } from "@/lib/data";
 
 export function Lightbox({
   videos,
-  publicIds,
+  playableIds,
   index,
   onNavigate,
   onClose,
 }: {
   videos: Video[];
-  publicIds: string[];
+  playableIds: string[];
   index: number;
   onNavigate: (index: number) => void;
   onClose: () => void;
 }) {
   const video = videos[index];
-  const category = categories.find((c) => c.id === video.category)!;
+  const category = categories.find((c) => c.slug === video.category)!;
   const closeRef = useRef<HTMLButtonElement>(null);
   const many = videos.length > 1;
 
@@ -75,9 +75,9 @@ export function Lightbox({
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-flare">
-              {category.label}
+              {video.client ?? category.label}
             </p>
-            <h3 className="mt-1 truncate font-display text-2xl uppercase leading-tight md:text-3xl">
+            <h3 className="mt-1 line-clamp-2 font-display text-2xl uppercase leading-tight md:text-3xl">
               {video.title}
             </h3>
           </div>
@@ -96,10 +96,10 @@ export function Lightbox({
           className="relative w-full overflow-hidden rounded-md border border-line bg-black"
           style={{ aspectRatio: portrait ? "9 / 16" : "16 / 9" }}
         >
-          {publicIds.includes(video.driveId) ? (
+          {playableIds.includes(video.id) ? (
             <iframe
-              key={video.driveId}
-              src={driveEmbedUrl(video.driveId)}
+              key={video.id}
+              src={embedUrl(video)}
               title={video.title}
               allow="autoplay; fullscreen"
               allowFullScreen
@@ -112,15 +112,15 @@ export function Lightbox({
               <div>
                 <p className="font-display text-2xl uppercase md:text-3xl">Preview coming soon</p>
                 <p className="mx-auto mt-3 max-w-sm text-sm text-ash">
-                  This video can&rsquo;t be played here yet. You can try opening it in Google Drive.
+                  This video can&rsquo;t be played here yet. You can try opening it in {hostName(video)}.
                 </p>
                 <a
-                  href={driveViewUrl(video.driveId)}
+                  href={watchUrl(video)}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-6 inline-flex items-center gap-2 rounded-full bg-flare px-5 py-3 text-sm font-semibold text-ink transition hover:bg-bone"
                 >
-                  Open in Drive <ArrowUpRight className="size-4" />
+                  Open in {hostName(video)} <ArrowUpRight className="size-4" />
                 </a>
               </div>
             </div>
@@ -154,12 +154,12 @@ export function Lightbox({
             <span />
           )}
           <a
-            href={driveViewUrl(video.driveId)}
+            href={watchUrl(video)}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 text-bone transition hover:text-flare"
           >
-            Open in Drive <ArrowUpRight className="size-3.5" />
+            Watch on {hostName(video)} <ArrowUpRight className="size-3.5" />
           </a>
         </div>
       </motion.div>
