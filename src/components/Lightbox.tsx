@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { categories, embedUrl, hostName, watchUrl, type Video } from "@/lib/data";
+import { categories, hostName, watchUrl, type Video } from "@/lib/data";
+import { Player } from "./Player";
 
 export function Lightbox({
   videos,
@@ -115,14 +116,7 @@ export function Lightbox({
           style={{ aspectRatio: portrait ? "9 / 16" : "16 / 9" }}
         >
           {playableIds.includes(video.id) ? (
-            <iframe
-              key={video.id}
-              src={embedUrl(video)}
-              title={video.title}
-              allow="autoplay; fullscreen"
-              allowFullScreen
-              className="absolute inset-0 size-full"
-            />
+            <Player key={video.id} video={video} />
           ) : (
             // Drive only embeds files shared as "Anyone with the link"; a private one
             // would load as a blank frame, so say so and offer the direct link instead.
@@ -164,7 +158,7 @@ export function Lightbox({
               >
                 <ChevronRight className="size-4" />
               </button>
-              <span className="ml-2 tabular-nums">
+              <span className="ml-2 whitespace-nowrap tabular-nums">
                 {String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}
               </span>
             </div>
@@ -175,9 +169,11 @@ export function Lightbox({
             href={watchUrl(video)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-bone transition hover:text-flare"
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-bone transition hover:text-flare"
           >
-            Watch on {hostName(video)} <ArrowUpRight className="size-3.5" />
+            <span className="sm:hidden">Open original</span>
+            <span className="hidden sm:inline">Watch on {hostName(video)}</span>
+            <ArrowUpRight className="size-3.5" />
           </a>
         </div>
       </motion.div>
