@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "aspects": "node scripts/aspects.mjs",
+    "predev": "node scripts/aspects.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/aspects.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

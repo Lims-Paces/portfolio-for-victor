@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Play } from "lucide-react";
 import { useState } from "react";
+import { aspectOf } from "@/lib/aspect";
 import type { Video } from "@/lib/data";
 import { Lightbox } from "./Lightbox";
 import { Thumb } from "./Thumb";
@@ -16,16 +17,17 @@ export function VideoGallery({
   playableIds: string[];
 }) {
   const [open, setOpen] = useState<number | null>(null);
-  // One frame shape per category, whichever suits most of its videos.
-  const portrait = videos.filter((v) => v.orientation === "portrait").length > videos.length / 2;
+  // Tall videos are narrow, so a mostly-vertical category fits more columns. Each card
+  // is then drawn in its own video's shape.
+  const portrait = videos.filter((v) => aspectOf(v) < 1).length > videos.length / 2;
 
   return (
     <>
       <ul
         className={
           portrait
-            ? "grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6"
-            : "grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+            ? "grid grid-cols-2 items-start gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-10"
+            : "grid items-start gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
         }
       >
         {videos.map((video, i) => (
@@ -37,9 +39,8 @@ export function VideoGallery({
           >
             <button type="button" onClick={() => setOpen(i)} className="group block w-full text-left">
               <div
-                className={`relative overflow-hidden rounded-md border border-line bg-panel transition duration-500 group-hover:border-flare/70 ${
-                  portrait ? "aspect-[9/16]" : "aspect-video"
-                }`}
+                className="relative overflow-hidden rounded-md border border-line bg-panel transition duration-500 group-hover:border-flare/70"
+                style={{ aspectRatio: aspectOf(video) }}
               >
                 <div className="absolute inset-0 transition duration-700 ease-out group-hover:scale-[1.04]">
                   <Thumb video={video} playable={playableIds.includes(video.id)} />

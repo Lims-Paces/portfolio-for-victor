@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { aspectOf } from "@/lib/aspect";
 import { categories, hostName, watchUrl, type Video } from "@/lib/data";
 import { Player } from "./Player";
 
@@ -65,10 +66,9 @@ export function Lightbox({
     };
   }, []);
 
-  const portrait = video.orientation === "portrait";
-  const width = portrait
-    ? "min(92vw, calc(72dvh * 9 / 16))"
-    : "min(92vw, 1120px, calc(72dvh * 16 / 9))";
+  // As large as the screen allows while keeping the video's own shape.
+  const aspect = aspectOf(video);
+  const width = `min(92vw, 1120px, calc(72dvh * ${aspect}))`;
 
   return (
     <motion.div
@@ -113,7 +113,7 @@ export function Lightbox({
 
         <div
           className="relative w-full overflow-hidden rounded-md border border-line bg-black"
-          style={{ aspectRatio: portrait ? "9 / 16" : "16 / 9" }}
+          style={{ aspectRatio: aspect }}
         >
           {playableIds.includes(video.id) ? (
             <Player key={video.id} video={video} />
