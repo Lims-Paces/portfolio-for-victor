@@ -44,14 +44,14 @@ export const tools = ["Premiere Pro", "After Effects", "DaVinci Resolve", "CapCu
 // Site copy. Kept short and plain on purpose: the videos do the talking.
 export const copy = {
   hero: {
-    statement: "I edit videos and make films with AI.",
-    sub: "Podcasts, movie recaps, kids' videos, motivational videos, health awareness campaigns, real estate and events.",
+    statement: "I'm a video editor and AI video creator.",
+    sub: "I edit podcasts, movie recaps, kids' videos, motivational videos, health awareness campaigns, real estate, events and more.",
   },
   work: { label: "Work", title: "Work", blurb: "Pick a category to see the videos." },
   about: {
     label: "About",
     title: "About",
-    lead: "Hi, I'm Victor. I'm a video editor, and I also make short films with AI.",
+    lead: "Hi, I'm Victor. I'm a video editor and AI video creator.",
     body: [
       "I edit for YouTube channels including Dr Paul's Health Tips, Kiddies Fun Club, The Rise of the Eternal Warriors and The Prime Motion Studios. I've also worked on health awareness campaigns, real estate and events.",
       "If you have footage that needs editing, or an idea you want to see on screen, get in touch.",
