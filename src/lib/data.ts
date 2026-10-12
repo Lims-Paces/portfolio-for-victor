@@ -18,7 +18,7 @@ export type SocialId = "whatsapp" | "email" | "instagram" | "linkedin" | "facebo
 
 export const socials: { id: SocialId; label: string; value: string; href: string }[] = [
   { id: "email", label: "Email", value: profile.email, href: `mailto:${profile.email}` },
-  { id: "whatsapp", label: "WhatsApp", value: "+234 812 291 9345", href: profile.whatsapp },
+  { id: "whatsapp", label: "WhatsApp", value: "Chat on WhatsApp", href: profile.whatsapp },
   {
     id: "instagram",
     label: "Instagram",
