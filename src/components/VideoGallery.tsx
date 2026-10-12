@@ -17,8 +17,8 @@ export function VideoGallery({
   playableIds: string[];
 }) {
   const [open, setOpen] = useState<number | null>(null);
-  // Tall videos are narrow, so a mostly-vertical category fits more columns. Each card
-  // is then drawn in its own video's shape.
+  // Every card in a category is the same shape, whichever suits most of its videos; a
+  // video of another shape is fitted inside. The player is what follows the real shape.
   const portrait = videos.filter((v) => aspectOf(v) < 1).length > videos.length / 2;
 
   return (
@@ -26,8 +26,8 @@ export function VideoGallery({
       <ul
         className={
           portrait
-            ? "grid grid-cols-2 items-start gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-10"
-            : "grid items-start gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
+            ? "grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-10"
+            : "grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
         }
       >
         {videos.map((video, i) => (
@@ -39,8 +39,9 @@ export function VideoGallery({
           >
             <button type="button" onClick={() => setOpen(i)} className="group block w-full text-left">
               <div
-                className="relative overflow-hidden rounded-md border border-line bg-panel transition duration-500 group-hover:border-flare/70"
-                style={{ aspectRatio: aspectOf(video) }}
+                className={`relative overflow-hidden rounded-md border border-line bg-panel transition duration-500 group-hover:border-flare/70 ${
+                  portrait ? "aspect-[9/16]" : "aspect-video"
+                }`}
               >
                 <div className="absolute inset-0 transition duration-700 ease-out group-hover:scale-[1.04]">
                   <Thumb video={video} playable={playableIds.includes(video.id)} />
