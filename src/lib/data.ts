@@ -143,15 +143,15 @@ export const videos: Video[] = [
   drive("1FKXoHOyV0uzNtKx509oRbi8v1_ymBVpD", "Palm Residence", "real-estate", { orientation: "portrait", poster: "/thumbs/palm-residence.jpg" }),
 
   // Health Awareness
+  drive("1TZFFIx2ZUUckeleJAImfvTkZltKGQ7Fi", "Parkinson", "health-awareness", { client: MHI, orientation: "portrait", poster: "/thumbs/parkinson.jpg" }),
+  tt("7584006879131716871", "Choose Life, Not Smoke", "health-awareness", "choose-life-not-smoke", "landscape"),
+  tt("7632681859368881416", "Malaria MHI", "health-awareness", "malaria-mhi"),
   tt("7637532644720299271", "World Ovarian Cancer Day", "health-awareness", "world-ovarian-cancer-day"),
   drive("1V4K48EFbpKmMCQ18E6r41H6IMRIM3G5g", "Postpartum", "health-awareness", { orientation: "portrait", poster: "/thumbs/postpartum.jpg" }),
-  drive("1TZFFIx2ZUUckeleJAImfvTkZltKGQ7Fi", "Parkinson", "health-awareness", { client: MHI, orientation: "portrait", poster: "/thumbs/parkinson.jpg" }),
   tt("7634652550020549895", "World Immunization Day", "health-awareness", "world-immunization-day"),
-  tt("7632681859368881416", "Malaria MHI", "health-awareness", "malaria-mhi"),
   tt("7626090121485421842", "World Health Day", "health-awareness", "world-health-day"),
   tt("7602917085009726738", "World Cancer Day 2026", "health-awareness", "world-cancer-day-2026"),
   tt("7620883940231908629", "Tuberculosis", "health-awareness", "tuberculosis"),
-  tt("7584006879131716871", "Choose Life, Not Smoke", "health-awareness", "choose-life-not-smoke", "landscape"),
   tt("7592909175248768264", "Join MHI", "health-awareness", "join-mhi"),
   tt("7588083659601677576", "Good Health, Good Christmas", "health-awareness", "good-health-good-christmas"),
 
