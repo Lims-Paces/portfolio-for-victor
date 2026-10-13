@@ -95,6 +95,8 @@ export type Video = {
   orientation: "portrait" | "landscape";
   /** Optional local thumbnail in /public. */
   poster?: string;
+  /** True when the video was made with AI. Wrap a video in ai(...) below to set it. */
+  ai?: boolean;
 };
 
 const yt = (id: string, title: string, category: CategorySlug, client: string): Video => ({
@@ -131,6 +133,9 @@ const tt = (
   poster: `/thumbs/${poster}.jpg`,
 });
 
+/** Marks a video as made with AI, which puts it in the "Made with AI" group on its page. */
+const ai = (video: Video): Video => ({ ...video, ai: true });
+
 const MHI = "My Health Integral";
 const DR_PAUL = "Dr Paul's Health Tips";
 const KIDDIES = "Kiddies Fun Club";
@@ -140,39 +145,39 @@ const PRIME_MOTION = "The Prime Motion Studios";
 export const videos: Video[] = [
   // Real Estate
   drive("1PXQ7JjGC3XNaopUVk_ZhF0w3ZMfQyeUT", "Dubai LD", "real-estate", { orientation: "portrait", poster: "/thumbs/dubai-ld.jpg" }),
-  drive("1FKXoHOyV0uzNtKx509oRbi8v1_ymBVpD", "Palm Residence", "real-estate", { orientation: "portrait", poster: "/thumbs/palm-residence.jpg" }),
+  ai(drive("1FKXoHOyV0uzNtKx509oRbi8v1_ymBVpD", "Palm Residence", "real-estate", { orientation: "portrait", poster: "/thumbs/palm-residence.jpg" })),
 
   // Health Awareness
   drive("1TZFFIx2ZUUckeleJAImfvTkZltKGQ7Fi", "Parkinson", "health-awareness", { client: MHI, orientation: "portrait", poster: "/thumbs/parkinson.jpg" }),
-  tt("7584006879131716871", "Choose Life, Not Smoke", "health-awareness", "choose-life-not-smoke", "landscape"),
-  tt("7632681859368881416", "Malaria MHI", "health-awareness", "malaria-mhi"),
+  ai(tt("7584006879131716871", "Choose Life, Not Smoke", "health-awareness", "choose-life-not-smoke", "landscape")),
+  ai(tt("7632681859368881416", "Malaria MHI", "health-awareness", "malaria-mhi")),
   tt("7637532644720299271", "World Ovarian Cancer Day", "health-awareness", "world-ovarian-cancer-day"),
-  drive("1V4K48EFbpKmMCQ18E6r41H6IMRIM3G5g", "Postpartum", "health-awareness", { orientation: "portrait", poster: "/thumbs/postpartum.jpg" }),
+  ai(drive("1V4K48EFbpKmMCQ18E6r41H6IMRIM3G5g", "Postpartum", "health-awareness", { orientation: "portrait", poster: "/thumbs/postpartum.jpg" })),
   tt("7634652550020549895", "World Immunization Day", "health-awareness", "world-immunization-day"),
   tt("7626090121485421842", "World Health Day", "health-awareness", "world-health-day"),
   tt("7602917085009726738", "World Cancer Day 2026", "health-awareness", "world-cancer-day-2026"),
   tt("7620883940231908629", "Tuberculosis", "health-awareness", "tuberculosis"),
-  tt("7592909175248768264", "Join MHI", "health-awareness", "join-mhi"),
-  tt("7588083659601677576", "Good Health, Good Christmas", "health-awareness", "good-health-good-christmas"),
+  ai(tt("7592909175248768264", "Join MHI", "health-awareness", "join-mhi")),
+  ai(tt("7588083659601677576", "Good Health, Good Christmas", "health-awareness", "good-health-good-christmas")),
 
   // Events
   drive("1GMbdxK56ly0pjQ1Cs8Q88rOfjSdgx-xC", "121 Selah Opening Dance", "events", { orientation: "portrait", poster: "/thumbs/121-selah.jpg" }),
 
   // AI Films
-  drive("1D4wf4-D3mB66hMSUaS-OD-FMVfdrrdjz", "Tea Split", "ai-films", { orientation: "portrait", poster: "/thumbs/tea-split.jpg" }),
-  drive("1oX99hXs5pSwY7z_FZm_PS_o2atA8uwHx", "Message", "ai-films", { orientation: "portrait", poster: "/thumbs/message.jpg" }),
-  drive("1Q3tvyTBvi9nHJJLdaAb6C2layIuWsx_3", "I Knew Your Father", "ai-films", { orientation: "portrait", poster: "/thumbs/i-knew-your-father.jpg" }),
-  drive("18HgOxynqbn4PaDh0snr1KnpWiaNzjiWD", "Clean in Here", "ai-films", { orientation: "portrait", poster: "/thumbs/clean-in-here.jpg" }),
-  drive("1HZeQvhV3YNouAebH--NmU7kG3jN51Uwq", "Clean Flashback", "ai-films", { orientation: "portrait", poster: "/thumbs/clean-flashback.jpg" }),
-  drive("1a7DFbRAHJ3YERrNZ8QDffJU7dtkbNQ3n", "Burial Flashback", "ai-films", { orientation: "portrait", poster: "/thumbs/burial-flashback.jpg" }),
-  drive("1H4_-1VvOBhxIGHkD4fC2c2xiLmNTGiP3", "Boardroom", "ai-films", { orientation: "portrait", poster: "/thumbs/boardroom.jpg" }),
-  drive("1YV5HS2a6yue5JssNZ2L9Ygm0sAWksVLW", "Arrest", "ai-films", { orientation: "portrait", poster: "/thumbs/arrest.jpg" }),
+  ai(drive("1D4wf4-D3mB66hMSUaS-OD-FMVfdrrdjz", "Tea Split", "ai-films", { orientation: "portrait", poster: "/thumbs/tea-split.jpg" })),
+  ai(drive("1oX99hXs5pSwY7z_FZm_PS_o2atA8uwHx", "Message", "ai-films", { orientation: "portrait", poster: "/thumbs/message.jpg" })),
+  ai(drive("1Q3tvyTBvi9nHJJLdaAb6C2layIuWsx_3", "I Knew Your Father", "ai-films", { orientation: "portrait", poster: "/thumbs/i-knew-your-father.jpg" })),
+  ai(drive("18HgOxynqbn4PaDh0snr1KnpWiaNzjiWD", "Clean in Here", "ai-films", { orientation: "portrait", poster: "/thumbs/clean-in-here.jpg" })),
+  ai(drive("1HZeQvhV3YNouAebH--NmU7kG3jN51Uwq", "Clean Flashback", "ai-films", { orientation: "portrait", poster: "/thumbs/clean-flashback.jpg" })),
+  ai(drive("1a7DFbRAHJ3YERrNZ8QDffJU7dtkbNQ3n", "Burial Flashback", "ai-films", { orientation: "portrait", poster: "/thumbs/burial-flashback.jpg" })),
+  ai(drive("1H4_-1VvOBhxIGHkD4fC2c2xiLmNTGiP3", "Boardroom", "ai-films", { orientation: "portrait", poster: "/thumbs/boardroom.jpg" })),
+  ai(drive("1YV5HS2a6yue5JssNZ2L9Ygm0sAWksVLW", "Arrest", "ai-films", { orientation: "portrait", poster: "/thumbs/arrest.jpg" })),
 
   // Kids
-  yt("k_ceGTlAVz8", "Soccer Tournament Song & Play Pretend Animals", "kids", KIDDIES),
-  yt("ABpsnEEHeKg", "Hurry! The School Bus Is Here!", "kids", KIDDIES),
-  yt("K8zX97923Ks", "Can You Make All 12 Animal Sounds?", "kids", KIDDIES),
-  yt("ikHvp1CGvDo", "The Hare Laughed at the Tortoise", "kids", KIDDIES),
+  ai(yt("k_ceGTlAVz8", "Soccer Tournament Song & Play Pretend Animals", "kids", KIDDIES)),
+  ai(yt("ABpsnEEHeKg", "Hurry! The School Bus Is Here!", "kids", KIDDIES)),
+  ai(yt("K8zX97923Ks", "Can You Make All 12 Animal Sounds?", "kids", KIDDIES)),
+  ai(yt("ikHvp1CGvDo", "The Hare Laughed at the Tortoise", "kids", KIDDIES)),
 
   // Motivation
   yt("KXmDn_SZ0Fo", "You're Boring", "motivation", WARRIORS),
@@ -182,12 +187,12 @@ export const videos: Video[] = [
   yt("m7wRxdk04U4", "The Greatest Regret (2)", "motivation", WARRIORS),
 
   // Podcasts
-  yt("IOz2C-Is35A", "Baby Movements", "podcasts", DR_PAUL),
-  yt("tXIawVubHRI", "Your Body Is Changing During Pregnancy", "podcasts", DR_PAUL),
-  yt("JlHSgRQ6ZfM", "Food During Pregnancy", "podcasts", DR_PAUL),
-  yt("4FhM0QYgjNU", "Pregnant With Twins?", "podcasts", DR_PAUL),
-  yt("7DmDhhClb-M", "Why Is Pregnancy Changing My Skin, Nose, Taste and Memory?", "podcasts", DR_PAUL),
-  drive("1F4ON22QGnDINctDCe3ps2zXIib-HNqfs", "Bill Podcast 2", "podcasts"),
+  ai(yt("IOz2C-Is35A", "Baby Movements", "podcasts", DR_PAUL)),
+  ai(yt("tXIawVubHRI", "Your Body Is Changing During Pregnancy", "podcasts", DR_PAUL)),
+  ai(yt("JlHSgRQ6ZfM", "Food During Pregnancy", "podcasts", DR_PAUL)),
+  ai(yt("4FhM0QYgjNU", "Pregnant With Twins?", "podcasts", DR_PAUL)),
+  ai(yt("7DmDhhClb-M", "Why Is Pregnancy Changing My Skin, Nose, Taste and Memory?", "podcasts", DR_PAUL)),
+  ai(drive("1F4ON22QGnDINctDCe3ps2zXIib-HNqfs", "Bill Podcast 2", "podcasts")),
 
   // Movie Recaps
   yt("WJr4hqzRC7A", "The Transporter", "movie-recaps", PRIME_MOTION),
